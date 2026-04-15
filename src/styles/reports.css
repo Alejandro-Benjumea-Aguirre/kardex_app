@@ -1,0 +1,444 @@
+/* styles/reports.css — Kardex CO Reports */
+
+/* ── Variables ──────────────────────────────────── */
+:root {
+  --bg-base:      #f8fafc;
+  --bg-card:      #ffffff;
+  --bg-card-alt:  #f1f5f9;
+  --bg-hover:     #e2e8f0;
+  --border:       rgba(0,0,0,0.08);
+  --teal:         #0d9488;
+  --teal-dim:     rgba(13,148,136,0.1);
+  --blue-muted:   #475569;
+  --text-primary: #1e293b;
+  --text-muted:   #64748b;
+  --danger:       #dc2626;
+  --warning-col:  #d97706;
+  --info-col:     #2563eb;
+  --radius-lg:    14px;
+  --radius-md:    10px;
+  --radius-sm:    6px;
+  --shadow:       0 4px 24px rgba(0,0,0,0.08);
+}
+
+.dark {
+  --bg-base:      #141d2b;
+  --bg-card:      #1a2535;
+  --bg-card-alt:  #1e2a3a;
+  --bg-hover:     #243044;
+  --border:       rgba(255,255,255,0.07);
+  --teal:         #00c9a7;
+  --teal-dim:     rgba(0,201,167,0.15);
+  --blue-muted:   #8ba8c8;
+  --text-primary: #d4e2f0;
+  --text-muted:   #5e7a96;
+  --danger:       #ff6b6b;
+  --warning-col:  #ffd166;
+  --info-col:     #74b9ff;
+  --shadow:       0 4px 24px rgba(0,0,0,0.35);
+}
+
+/* ── Page Layout ─────────────────────────────────── */
+.reports-page {
+  padding: 28px 32px;
+  min-height: 100vh;
+  background: var(--bg-base);
+  font-family: 'Nunito', sans-serif;
+  color: var(--text-primary);
+}
+
+/* ── Header ──────────────────────────────────────── */
+.reports-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.reports-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.reports-title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--teal-dim);
+  color: var(--teal);
+}
+
+.reports-subtitle {
+  margin: 4px 0 0 50px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* ── Tabs ────────────────────────────────────────── */
+.reports-tabs {
+  position: relative;
+  display: flex;
+  gap: 4px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 6px;
+  margin-bottom: 28px;
+  border: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.reports-tab {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+
+.reports-tab:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.reports-tab--active {
+  background: var(--bg-card-alt);
+  color: var(--teal);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+
+.reports-tab-icon { display: flex; align-items: center; }
+
+/* ── KPI Grid ────────────────────────────────────── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.kpi-card--accent  { border-left: 3px solid var(--teal);     }
+.kpi-card--warning { border-left: 3px solid var(--warning-col); }
+.kpi-card--danger  { border-left: 3px solid var(--danger);   }
+
+.kpi-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.kpi-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.kpi-value--sm { font-size: 1.3rem; }
+
+.kpi-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.kpi-sub--up { color: var(--teal); }
+
+/* ── Chart Cards ─────────────────────────────────── */
+.chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  margin-bottom: 24px;
+}
+
+.chart-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.chart-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.chart-wrapper {
+  height: 260px;
+  position: relative;
+}
+
+.charts-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.chart-card--wide { margin-bottom: 0; }
+
+@media (max-width: 900px) {
+  .charts-row { grid-template-columns: 1fr; }
+}
+
+/* ── Chart controls ──────────────────────────────── */
+.chart-controls { display: flex; gap: 6px; }
+
+.btn-period {
+  padding: 5px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-period--active, .btn-period:hover {
+  background: var(--teal-dim);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+/* ── Sub-tabs ─────────────────────────────────────── */
+.subtabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.subtab {
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.subtab:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+.subtab--active {
+  background: var(--teal-dim);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+/* ── Table Card ──────────────────────────────────── */
+.table-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.table-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  margin-right: 4px;
+}
+
+.toolbar-filters {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.filter-input,
+.filter-select {
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.filter-input { min-width: 220px; }
+.filter-select { min-width: 140px; cursor: pointer; }
+
+.filter-input:focus,
+.filter-select:focus { border-color: var(--teal); }
+
+/* ── Export Buttons ──────────────────────────────── */
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-export--excel {
+  background: rgba(33,115,70,0.15);
+  border-color: rgba(33,115,70,0.4);
+  color: #4ade80;
+}
+
+.btn-export--excel:hover {
+  background: rgba(33,115,70,0.3);
+  transform: translateY(-1px);
+}
+
+.btn-export--pdf {
+  background: rgba(239,68,68,0.12);
+  border-color: rgba(239,68,68,0.35);
+  color: #f87171;
+}
+
+.btn-export--pdf:hover {
+  background: rgba(239,68,68,0.22);
+  transform: translateY(-1px);
+}
+
+/* ── Data Table ──────────────────────────────────── */
+.table-wrapper { overflow-x: auto; }
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.87rem;
+}
+
+.data-table thead tr {
+  background: var(--bg-base);
+}
+
+.data-table th {
+  padding: 13px 16px;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.data-table td {
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.data-table tbody tr:hover { background: var(--bg-hover); }
+.data-table tbody tr:last-child td { border-bottom: none; }
+
+.td-product { font-weight: 600; }
+.td-accent  { color: var(--teal); font-weight: 700; }
+.td-danger  { color: var(--danger); font-weight: 700; }
+.td-mono    { font-family: 'Courier New', monospace; font-size: 0.82rem; color: var(--blue-muted); }
+.tr-warning { background: rgba(255,209,102,0.04); }
+
+/* ── Badges ──────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.badge--success { background: rgba(0,201,167,0.15); color: var(--teal);        border: 1px solid rgba(0,201,167,0.3); }
+.badge--danger  { background: rgba(255,107,107,0.15); color: var(--danger);     border: 1px solid rgba(255,107,107,0.3); }
+.badge--warning { background: rgba(255,209,102,0.15); color: var(--warning-col); border: 1px solid rgba(255,209,102,0.3); }
+.badge--info    { background: rgba(116,185,255,0.15); color: var(--info-col);   border: 1px solid rgba(116,185,255,0.3); }
+
+/* ── Misc ────────────────────────────────────────── */
+.report-section { animation: fadeInUp 0.3s ease; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.alert-banner {
+  margin: 16px 20px 0;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,209,102,0.1);
+  border: 1px solid rgba(255,209,102,0.3);
+  color: var(--warning-col);
+  font-size: 0.87rem;
+}
+
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: var(--teal);
+  font-size: 1rem;
+}

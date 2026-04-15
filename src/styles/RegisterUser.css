@@ -1,0 +1,657 @@
+/* RegisterPage.css — mismo sistema de diseño que LoginPage */
+
+.register-body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #166534 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.main-wrapper-register {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+/* ─── CONTENEDOR PRINCIPAL ─── */
+.register-container {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 0;
+  width: 100%;
+  max-width: 1050px;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideInUp 0.8s ease forwards;
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── LADO IZQUIERDO — BRANDING ─── */
+.register-brand {
+  background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-background {
+  position: absolute;
+  inset: 0;
+  opacity: 0.1;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(255,255,255,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255,255,255,0.15) 0%, transparent 50%);
+}
+
+.brand-content {
+  position: relative;
+  z-index: 2;
+}
+
+.brand-logo {
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0 auto 1.5rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+.brand-name {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+}
+
+.brand-description {
+  font-size: 1rem;
+  opacity: 0.95;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+.brand-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  text-align: left;
+  margin-top: 2rem;
+}
+
+.brand-feature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.brand-feature .feature-icon {
+  font-size: 1.4rem;
+}
+
+/* ─── PASO INDICADOR ─── */
+.steps-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  border: 2px solid rgba(255,255,255,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.step-circle.active {
+  background: white;
+  border-color: white;
+  color: #3b82f6;
+}
+
+.step-circle.completed {
+  background: rgba(255,255,255,0.9);
+  border-color: white;
+  color: #10b981;
+}
+
+.step-label {
+  font-size: 0.7rem;
+  opacity: 0.85;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.step-connector {
+  width: 40px;
+  height: 2px;
+  background: rgba(255,255,255,0.3);
+  margin: 0 0.5rem;
+  margin-bottom: 1.2rem;
+  position: relative;
+}
+
+.step-connector.completed::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.8);
+  border-radius: 2px;
+}
+
+/* ─── LADO DERECHO — FORMULARIO ─── */
+.register-form-section {
+  padding: 2.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  animation: fadeIn 0.8s ease forwards;
+  animation-delay: 0.2s;
+  opacity: 0;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.form-header {
+  margin-bottom: 1.75rem;
+}
+
+.form-header h2 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 0.3rem;
+}
+
+.form-header p {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+/* ─── BARRA DE PROGRESO ─── */
+.progress-bar-wrapper {
+  margin-bottom: 1.75rem;
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+  border-radius: 999px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.progress-label .active-step-label {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+/* ─── STEP PANEL ─── */
+.step-panel {
+  animation: fadeInUp 0.45s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── GRUPOS DE CAMPOS ─── */
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  color: #334155;
+  font-size: 0.88rem;
+}
+
+input[type='email'],
+input[type='password'],
+input[type='text'],
+input[type='tel'],
+select,
+textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
+  box-sizing: border-box;
+}
+
+input[type='email']:focus,
+input[type='password']:focus,
+input[type='text']:focus,
+input[type='tel']:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+input.error,
+select.error,
+textarea.error {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ─── ERRORES ─── */
+.error-message {
+  color: #ef4444;
+  font-size: 0.8rem;
+  margin-top: 0.35rem;
+  display: none;
+}
+
+.error-message.show {
+  display: block;
+}
+
+/* ─── INDICADOR DE FUERZA DE CONTRASEÑA ─── */
+.password-strength {
+  margin-top: 0.5rem;
+}
+
+.strength-bars {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 0.25rem;
+}
+
+.strength-bar {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: #e2e8f0;
+  transition: background 0.3s ease;
+}
+
+.strength-bar.weak   { background: #ef4444; }
+.strength-bar.medium { background: #f59e0b; }
+.strength-bar.strong { background: #10b981; }
+
+.strength-text {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* ─── MENSAJE DE ÉXITO ─── */
+.success-message {
+  color: #10b981;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: #d1fae5;
+  border-radius: 8px;
+  display: none;
+}
+
+.success-message.show {
+  display: block;
+}
+
+/* ─── SECCIÓN DE SEPARADOR ─── */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0 1.25rem;
+}
+
+.section-divider span {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+/* ─── BOTONES DE NAVEGACIÓN ─── */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn-back {
+  flex: 1;
+  padding: 0.875rem;
+  background: white;
+  color: #3b82f6;
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-back:hover {
+  background: #f0f9ff;
+}
+
+.btn-next,
+.btn-submit {
+  flex: 2;
+  padding: 0.875rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-next:hover:not(:disabled),
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.btn-next:disabled,
+.btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Spinner */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── FOOTER ─── */
+.form-footer {
+  text-align: center;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 1rem;
+}
+
+.signup-text {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.signup-link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.signup-link:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* ─── INFO BOX ─── */
+.info-box {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+  color: #0369a1;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.info-box svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  .register-container {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    border-radius: 0;
+  }
+
+  .register-brand {
+    padding: 2rem 1.5rem;
+    min-height: 220px;
+  }
+
+  .brand-name { font-size: 1.8rem; }
+  .brand-logo  { width: 60px; height: 60px; font-size: 2rem; }
+  .brand-features { display: none; }
+
+  .register-form-section {
+    padding: 2rem 1.5rem;
+    max-height: none;
+  }
+
+  .form-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .register-brand {
+    padding: 1.5rem 1rem;
+    min-height: 160px;
+  }
+
+  .register-form-section { padding: 1.5rem 1rem; }
+  .form-header h2 { font-size: 1.3rem; }
+  .steps-indicator { display: none; }
+}
+/* ═══════════════════════════════════════════════
+   DARK MODE
+═══════════════════════════════════════════════ */
+
+html.dark .register-container {
+  background: #1e293b;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+html.dark .register-form-section {
+  background: #1e293b;
+}
+
+html.dark .form-header h2 {
+  color: #f1f5f9;
+}
+
+html.dark .form-header p {
+  color: #94a3b8;
+}
+
+html.dark label {
+  color: #cbd5e1;
+}
+
+html.dark input[type='email'],
+html.dark input[type='password'],
+html.dark input[type='text'],
+html.dark input[type='tel'] {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+html.dark input[type='email']:focus,
+html.dark input[type='password']:focus,
+html.dark input[type='text']:focus,
+html.dark input[type='tel']:focus {
+  border-color: #3b82f6;
+  background: #0d1526;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+html.dark input::placeholder {
+  color: #475569;
+}
+
+html.dark select {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+html.dark select:focus {
+  border-color: #3b82f6;
+  background: #0d1526;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+html.dark input.error,
+html.dark select.error {
+  border-color: #ef4444;
+  background: #1a0a0a;
+}
+
+html.dark .info-box {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+}
+
+html.dark .progress-bar-track {
+  background: #334155;
+}
+
+html.dark .progress-label {
+  color: #94a3b8;
+}
+
+html.dark .strength-text {
+  color: #94a3b8;
+}
+
+html.dark .form-footer {
+  border-top-color: #334155;
+}
+
+html.dark .signup-text {
+  color: #94a3b8;
+}
