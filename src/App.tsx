@@ -12,7 +12,7 @@ import RegisterPurchase from './pages/RegisterPurchase';
 import ReportsPage from './pages/ReportsPage';
 
 // Layout / Guards
-import ProtectedRoute from './components/layout/ProtectedRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './components/layout/DashboardLayout';
 
 export function App() {

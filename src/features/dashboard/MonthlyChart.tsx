@@ -11,7 +11,7 @@ import {
 
 const data = [
 {
-  name: 'Jan',
+  name: 'Ene',
   income: 6500,
   expenses: 4200
 },
@@ -26,7 +26,7 @@ const data = [
   expenses: 5100
 },
 {
-  name: 'Apr',
+  name: 'Abr',
   income: 8100,
   expenses: 4900
 },

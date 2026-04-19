@@ -31,7 +31,7 @@ export function AlertsSection() {
     <section aria-label="Alerts and Notifications">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-          Alerts & Notifications
+          Alertas y Notificaciones
         </h2>
         <button className="text-sm text-blue-600 font-medium hover:text-blue-700 flex items-center">
           Ver todas <ChevronRight className="w-4 h-4 ml-1" />

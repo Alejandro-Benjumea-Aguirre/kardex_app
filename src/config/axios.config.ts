@@ -36,9 +36,11 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     const status = error.response?.status;
 
-    // 401 — Token expirado o inválido: limpiar sesión y redirigir al login
+    // 401 — Token expirado o inválido: limpiar sesión completa y redirigir al login
     if (status === 401) {
       localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem('kardex_token_expires');
+      localStorage.removeItem('kardex_user');
       // Evitar bucle si ya estamos en /login
       if (!window.location.pathname.includes('/login')) {
         window.location.href = '/login';

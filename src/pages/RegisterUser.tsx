@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Select, { StylesConfig, SingleValue } from 'react-select';
 import '../styles/RegisterUser.css';
 
 // ─── TIPOS ────────────────────────────────────────────────────────────────────
@@ -46,6 +47,49 @@ interface FormErrors {
   general?: string;
 }
 
+// ─── SELECT OPTION TYPE ───────────────────────────────────────────────────────
+
+interface SelectOption {
+  value: string;
+  label: string;
+}
+
+const buildSelectStyles = (hasError: boolean): StylesConfig<SelectOption, false> => ({
+  control: (_, state) => ({
+    display: 'flex',
+    alignItems: 'center',
+    height: '44px',
+    padding: '0',
+    border: `2px solid ${hasError ? '#ef4444' : state.isFocused ? '#3b82f6' : '#e2e8f0'}`,
+    borderRadius: '8px',
+    backgroundColor: hasError ? '#fef2f2' : state.isFocused ? '#ffffff' : '#f8fafc',
+    boxShadow: state.isFocused && !hasError ? '0 0 0 3px rgba(59,130,246,0.1)' : 'none',
+    fontSize: '0.95rem',
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    color: '#1e293b',
+    cursor: 'default',
+    transition: 'border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease',
+    '&:hover': { borderColor: hasError ? '#ef4444' : state.isFocused ? '#3b82f6' : '#cbd5e1' },
+  }),
+  valueContainer: (base) => ({ ...base, padding: '0 0.75rem', height: '100%' }),
+  input: (base) => ({ ...base, margin: 0, padding: 0, color: '#1e293b' }),
+  indicatorSeparator: () => ({ display: 'none' }),
+  dropdownIndicator: (base) => ({ ...base, padding: '0 10px', color: '#64748b' }),
+  clearIndicator: (base) => ({ ...base, padding: '0 4px', color: '#94a3b8' }),
+  placeholder: (base) => ({ ...base, color: '#94a3b8', fontSize: '0.95rem', margin: 0 }),
+  singleValue: (base) => ({ ...base, color: '#1e293b', margin: 0 }),
+  menu: (base) => ({ ...base, borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.14)', zIndex: 9999, marginTop: '4px' }),
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isSelected ? '#3b82f6' : state.isFocused ? '#f0f9ff' : 'white',
+    color: state.isSelected ? 'white' : '#1e293b',
+    fontSize: '0.92rem',
+    cursor: 'pointer',
+    padding: '0.55rem 1rem',
+  }),
+});
+
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
 const isValidEmail = (email: string): boolean =>
@@ -79,7 +123,7 @@ export default function RegisterPage() {
     phone: '',
     address: '',
     city: '',
-    country: 'Colombia',
+    country: '',
     website: '',
   });
 
@@ -96,6 +140,8 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const pwdStrength = getPasswordStrength(user.password);
 
@@ -228,9 +274,24 @@ export default function RegisterPage() {
       if (!response.ok) {
         // Laravel devuelve errores de validación en data.errors
         if (data.errors) {
+          // Mapa de campos snake_case del backend → camelCase del formulario
+          const fieldMap: Record<string, keyof FormErrors> = {
+            'company.name':    'companyName',
+            'company.nit':     'nit',
+            'company.sector':  'sector',
+            'company.phone':   'phone',
+            'company.address': 'address',
+            'company.city':    'city',
+            'company.country': 'country',
+            'user.first_name': 'firstName',
+            'user.last_name':  'lastName',
+            'user.email':      'email',
+            'user.password':   'password',
+            'user.role':       'role',
+          };
           const serverErrors: FormErrors = {};
           Object.entries(data.errors).forEach(([key, msgs]) => {
-            const mapped = key.replace('user.', '').replace('company.', '') as keyof FormErrors;
+            const mapped = fieldMap[key] ?? key.replace('user.', '').replace('company.', '') as keyof FormErrors;
             serverErrors[mapped] = (msgs as string[])[0];
           });
           setErrors(serverErrors);
@@ -248,10 +309,6 @@ export default function RegisterPage() {
       }
 
       // ✅ Registro exitoso
-      // Opcional: guardar token si la API lo devuelve
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-      }
 
       setShowSuccess(true);
       setTimeout(() => navigate('/login'), 2000);
@@ -420,25 +477,38 @@ export default function RegisterPage() {
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="sector">Sector / Industria *</label>
-                  <select
-                    id="sector"
-                    name="sector"
-                    value={company.sector}
-                    onChange={handleCompanyChange}
-                    className={errors.sector ? 'error' : ''}
-                  >
-                    <option value="">Seleccionar sector</option>
-                    <option value="retail">Comercio / Retail</option>
-                    <option value="food">Alimentos y Bebidas</option>
-                    <option value="manufacturing">Manufactura</option>
-                    <option value="services">Servicios</option>
-                    <option value="technology">Tecnología</option>
-                    <option value="healthcare">Salud</option>
-                    <option value="education">Educación</option>
-                    <option value="construction">Construcción</option>
-                    <option value="agriculture">Agropecuario</option>
-                    <option value="other">Otro</option>
-                  </select>
+                  <Select<SelectOption>
+                    inputId="sector"
+                    placeholder="Seleccionar sector..."
+                    isClearable
+                    isSearchable
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    options={[
+                      { value: 'retail',        label: 'Comercio / Retail' },
+                      { value: 'food',          label: 'Alimentos y Bebidas' },
+                      { value: 'manufacturing', label: 'Manufactura' },
+                      { value: 'services',      label: 'Servicios' },
+                      { value: 'technology',    label: 'Tecnología' },
+                      { value: 'healthcare',    label: 'Salud' },
+                      { value: 'education',     label: 'Educación' },
+                      { value: 'construction',  label: 'Construcción' },
+                      { value: 'agriculture',   label: 'Agropecuario' },
+                      { value: 'other',         label: 'Otro' },
+                    ]}
+                    value={company.sector ? { value: company.sector, label: {
+                      retail: 'Comercio / Retail', food: 'Alimentos y Bebidas',
+                      manufacturing: 'Manufactura', services: 'Servicios',
+                      technology: 'Tecnología', healthcare: 'Salud',
+                      education: 'Educación', construction: 'Construcción',
+                      agriculture: 'Agropecuario', other: 'Otro',
+                    }[company.sector] ?? company.sector } : null}
+                    onChange={(opt: SingleValue<SelectOption>) =>
+                      setCompany(prev => ({ ...prev, sector: opt?.value ?? '' }))
+                    }
+                    styles={buildSelectStyles(!!errors.sector)}
+                    noOptionsMessage={() => 'Sin resultados'}
+                  />
                   {errors.sector && (
                     <div className="error-message show">{errors.sector}</div>
                   )}
@@ -478,47 +548,77 @@ export default function RegisterPage() {
                 )}
               </div>
 
-              {/* Ciudad + País */}
+              {/* País + Ciudad */}
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="city">Ciudad *</label>
-                  <input
-                    type="text"
-                    id="city"
-                    name="city"
-                    placeholder="Ej. Bogotá"
-                    value={company.city}
-                    onChange={handleCompanyChange}
-                    className={errors.city ? 'error' : ''}
+                  <label htmlFor="country">País *</label>
+                  <Select<SelectOption>
+                    inputId="country"
+                    placeholder="Buscar país..."
+                    isClearable
+                    isSearchable
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    options={[
+                      { value: 'Colombia', label: 'Colombia' },
+                      { value: 'México', label: 'México' },
+                      { value: 'Venezuela', label: 'Venezuela' },
+                      { value: 'Ecuador', label: 'Ecuador' },
+                      { value: 'Perú', label: 'Perú' },
+                      { value: 'Argentina', label: 'Argentina' },
+                      { value: 'Chile', label: 'Chile' },
+                      { value: 'Bolivia', label: 'Bolivia' },
+                      { value: 'Paraguay', label: 'Paraguay' },
+                      { value: 'Uruguay', label: 'Uruguay' },
+                      { value: 'Otro', label: 'Otro' },
+                    ]}
+                    value={company.country ? { value: company.country, label: company.country } : null}
+                    onChange={(opt: SingleValue<SelectOption>) =>
+                      setCompany(prev => ({ ...prev, country: opt?.value ?? '' }))
+                    }
+                    styles={buildSelectStyles(!!errors.country)}
+                    noOptionsMessage={() => 'Sin resultados'}
                   />
-                  {errors.city && (
-                    <div className="error-message show">{errors.city}</div>
+                  {errors.country && (
+                    <div className="error-message show">{errors.country}</div>
                   )}
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="country">País *</label>
-                  <select
-                    id="country"
-                    name="country"
-                    value={company.country}
-                    onChange={handleCompanyChange}
-                    className={errors.country ? 'error' : ''}
-                  >
-                    <option value="Colombia">Colombia</option>
-                    <option value="México">México</option>
-                    <option value="Venezuela">Venezuela</option>
-                    <option value="Ecuador">Ecuador</option>
-                    <option value="Perú">Perú</option>
-                    <option value="Argentina">Argentina</option>
-                    <option value="Chile">Chile</option>
-                    <option value="Bolivia">Bolivia</option>
-                    <option value="Paraguay">Paraguay</option>
-                    <option value="Uruguay">Uruguay</option>
-                    <option value="Otro">Otro</option>
-                  </select>
-                  {errors.country && (
-                    <div className="error-message show">{errors.country}</div>
+                  <label htmlFor="city">Ciudad *</label>
+                  <Select<SelectOption>
+                    inputId="city"
+                    placeholder="Buscar ciudad..."
+                    isClearable
+                    isSearchable
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    options={[
+                      { value: 'Bogotá', label: 'Bogotá' },
+                      { value: 'Medellín', label: 'Medellín' },
+                      { value: 'Cali', label: 'Cali' },
+                      { value: 'Barranquilla', label: 'Barranquilla' },
+                      { value: 'Cartagena', label: 'Cartagena' },
+                      { value: 'Cúcuta', label: 'Cúcuta' },
+                      { value: 'Bucaramanga', label: 'Bucaramanga' },
+                      { value: 'Pereira', label: 'Pereira' },
+                      { value: 'Santa Marta', label: 'Santa Marta' },
+                      { value: 'Ibagué', label: 'Ibagué' },
+                      { value: 'Manizales', label: 'Manizales' },
+                      { value: 'Pasto', label: 'Pasto' },
+                      { value: 'Neiva', label: 'Neiva' },
+                      { value: 'Armenia', label: 'Armenia' },
+                      { value: 'Villavicencio', label: 'Villavicencio' },
+                    ]}
+                    value={company.city ? { value: company.city, label: company.city } : null}
+                    onChange={(opt: SingleValue<SelectOption>) =>
+                      setCompany(prev => ({ ...prev, city: opt?.value ?? '' }))
+                    }
+                    styles={buildSelectStyles(!!errors.city)}
+                    noOptionsMessage={() => 'Sin resultados'}
+                  />
+                  {errors.city && (
+                    <div className="error-message show">{errors.city}</div>
                   )}
                 </div>
               </div>
@@ -626,21 +726,32 @@ export default function RegisterPage() {
                 {/* Rol */}
                 <div className="form-group">
                   <label htmlFor="role">Rol en la empresa *</label>
-                  <select
-                    id="role"
-                    name="role"
-                    value={user.role}
-                    onChange={handleUserChange}
-                    className={errors.role ? 'error' : ''}
-                    disabled={isLoading}
-                  >
-                    <option value="">Seleccionar rol</option>
-                    <option value="owner">Propietario / Dueño</option>
-                    <option value="admin">Administrador</option>
-                    <option value="manager">Gerente</option>
-                    <option value="accountant">Contador</option>
-                    <option value="warehouse">Encargado de Bodega</option>
-                  </select>
+                  <Select<SelectOption>
+                    inputId="role"
+                    placeholder="Seleccionar rol..."
+                    isClearable
+                    isSearchable
+                    isDisabled={isLoading}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    options={[
+                      { value: 'owner',     label: 'Propietario / Dueño' },
+                      { value: 'admin',     label: 'Administrador' },
+                      { value: 'manager',   label: 'Gerente' },
+                      { value: 'accountant',label: 'Contador' },
+                      { value: 'warehouse', label: 'Encargado de Bodega' },
+                    ]}
+                    value={user.role ? { value: user.role, label: {
+                      owner: 'Propietario / Dueño', admin: 'Administrador',
+                      manager: 'Gerente', accountant: 'Contador',
+                      warehouse: 'Encargado de Bodega',
+                    }[user.role] ?? user.role } : null}
+                    onChange={(opt: SingleValue<SelectOption>) =>
+                      setUser(prev => ({ ...prev, role: opt?.value ?? '' }))
+                    }
+                    styles={buildSelectStyles(!!errors.role)}
+                    noOptionsMessage={() => 'Sin resultados'}
+                  />
                   {errors.role && (
                     <div className="error-message show">{errors.role}</div>
                   )}
@@ -649,16 +760,38 @@ export default function RegisterPage() {
                 {/* Contraseña */}
                 <div className="form-group">
                   <label htmlFor="password">Contraseña *</label>
-                  <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    placeholder="Mínimo 8 caracteres"
-                    value={user.password}
-                    onChange={handleUserChange}
-                    className={errors.password ? 'error' : ''}
-                    disabled={isLoading}
-                  />
+                  <div className="input-password-wrapper">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      id="password"
+                      name="password"
+                      placeholder="Mínimo 8 caracteres"
+                      value={user.password}
+                      onChange={handleUserChange}
+                      className={errors.password ? 'error' : ''}
+                      disabled={isLoading}
+                    />
+                    <button
+                      type="button"
+                      className="btn-toggle-password"
+                      onClick={() => setShowPassword(p => !p)}
+                      tabIndex={-1}
+                      aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    >
+                      {showPassword ? (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                          <line x1="1" y1="1" x2="23" y2="23"/>
+                        </svg>
+                      ) : (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                          <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                      )}
+                    </button>
+                  </div>
                   {errors.password && (
                     <div className="error-message show">{errors.password}</div>
                   )}
@@ -693,16 +826,38 @@ export default function RegisterPage() {
                 {/* Confirmar contraseña */}
                 <div className="form-group">
                   <label htmlFor="confirmPassword">Confirmar Contraseña *</label>
-                  <input
-                    type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    placeholder="Repite tu contraseña"
-                    value={user.confirmPassword}
-                    onChange={handleUserChange}
-                    className={errors.confirmPassword ? 'error' : ''}
-                    disabled={isLoading}
-                  />
+                  <div className="input-password-wrapper">
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      placeholder="Repite tu contraseña"
+                      value={user.confirmPassword}
+                      onChange={handleUserChange}
+                      className={errors.confirmPassword ? 'error' : ''}
+                      disabled={isLoading}
+                    />
+                    <button
+                      type="button"
+                      className="btn-toggle-password"
+                      onClick={() => setShowConfirmPassword(p => !p)}
+                      tabIndex={-1}
+                      aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    >
+                      {showConfirmPassword ? (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                          <line x1="1" y1="1" x2="23" y2="23"/>
+                        </svg>
+                      ) : (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                          <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                      )}
+                    </button>
+                  </div>
                   {errors.confirmPassword && (
                     <div className="error-message show">{errors.confirmPassword}</div>
                   )}

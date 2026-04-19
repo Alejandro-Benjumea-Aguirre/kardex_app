@@ -9,7 +9,7 @@ const actions = [
   color: 'text-blue-600',
   borderColor: 'hover:border-blue-200',
   bgColor: 'hover:bg-blue-50',
-  link: '/products/new'
+  link: '/sales/new'
 },
 {
   label: 'Registrar pago',
@@ -17,7 +17,7 @@ const actions = [
   color: 'text-rose-600',
   borderColor: 'hover:border-rose-200',
   bgColor: 'hover:bg-rose-50',
-  link: '/sales/new'
+  link: '/payments/new'
 },
 {
   label: 'Registrar producto',
@@ -25,7 +25,7 @@ const actions = [
   color: 'text-green-600',
   borderColor: 'hover:border-green-200',
   bgColor: 'hover:bg-green-50',
-  link: '/payments/new'
+  link: '/products/new'
 },
 {
   label: 'Reportes',

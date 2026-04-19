@@ -13,7 +13,7 @@ export default function Home() {
   });
 
   return (
-    <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-8">
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
@@ -84,6 +84,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
   )
 }

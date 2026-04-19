@@ -345,6 +345,43 @@ textarea {
   display: block;
 }
 
+/* ─── CAMPO CONTRASEÑA CON BOTÓN OJO ─── */
+.input-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-password-wrapper input {
+  padding-right: 2.75rem;
+}
+
+.btn-toggle-password {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+  line-height: 0;
+}
+
+.btn-toggle-password:hover {
+  color: #3b82f6;
+}
+
+html.dark .btn-toggle-password {
+  color: #475569;
+}
+
+html.dark .btn-toggle-password:hover {
+  color: #60a5fa;
+}
+
 /* ─── INDICADOR DE FUERZA DE CONTRASEÑA ─── */
 .password-strength {
   margin-top: 0.5rem;

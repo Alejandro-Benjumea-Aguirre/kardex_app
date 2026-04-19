@@ -93,7 +93,7 @@ export default function RegisterSale() {
 
           <button
             className="p-2 -ml-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:text-slate-500 dark:hover:text-slate-300 dark:hover:bg-slate-800 rounded-full transition-colors self-start sm:self-auto"
-            onClick={() => navigate('/')}>
+            onClick={() => navigate('/dashboard')}>
             <ArrowLeft className="w-6 h-6" />
           </button>
           <div>
