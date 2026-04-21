@@ -54,36 +54,52 @@ interface SelectOption {
   label: string;
 }
 
-const buildSelectStyles = (hasError: boolean): StylesConfig<SelectOption, false> => ({
+const buildSelectStyles = (hasError: boolean, isDark: boolean): StylesConfig<SelectOption, false> => ({
   control: (_, state) => ({
     display: 'flex',
     alignItems: 'center',
     height: '44px',
     padding: '0',
-    border: `2px solid ${hasError ? '#ef4444' : state.isFocused ? '#3b82f6' : '#e2e8f0'}`,
+    border: `2px solid ${hasError ? '#ef4444' : state.isFocused ? '#3b82f6' : isDark ? '#334155' : '#e2e8f0'}`,
     borderRadius: '8px',
-    backgroundColor: hasError ? '#fef2f2' : state.isFocused ? '#ffffff' : '#f8fafc',
-    boxShadow: state.isFocused && !hasError ? '0 0 0 3px rgba(59,130,246,0.1)' : 'none',
+    backgroundColor: hasError
+      ? (isDark ? '#1a0a0a' : '#fef2f2')
+      : state.isFocused
+        ? (isDark ? '#0d1526' : '#ffffff')
+        : (isDark ? '#0f172a' : '#f8fafc'),
+    boxShadow: state.isFocused && !hasError ? '0 0 0 3px rgba(59,130,246,0.15)' : 'none',
     fontSize: '0.95rem',
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    color: '#1e293b',
+    color: isDark ? '#f1f5f9' : '#1e293b',
     cursor: 'default',
     transition: 'border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease',
-    '&:hover': { borderColor: hasError ? '#ef4444' : state.isFocused ? '#3b82f6' : '#cbd5e1' },
+    '&:hover': { borderColor: hasError ? '#ef4444' : state.isFocused ? '#3b82f6' : (isDark ? '#475569' : '#cbd5e1') },
   }),
   valueContainer: (base) => ({ ...base, padding: '0 0.75rem', height: '100%' }),
-  input: (base) => ({ ...base, margin: 0, padding: 0, color: '#1e293b' }),
+  input: (base) => ({ ...base, margin: 0, padding: 0, color: isDark ? '#f1f5f9' : '#1e293b' }),
   indicatorSeparator: () => ({ display: 'none' }),
-  dropdownIndicator: (base) => ({ ...base, padding: '0 10px', color: '#64748b' }),
-  clearIndicator: (base) => ({ ...base, padding: '0 4px', color: '#94a3b8' }),
-  placeholder: (base) => ({ ...base, color: '#94a3b8', fontSize: '0.95rem', margin: 0 }),
-  singleValue: (base) => ({ ...base, color: '#1e293b', margin: 0 }),
-  menu: (base) => ({ ...base, borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.14)', zIndex: 9999, marginTop: '4px' }),
+  dropdownIndicator: (base) => ({ ...base, padding: '0 10px', color: isDark ? '#94a3b8' : '#64748b' }),
+  clearIndicator: (base) => ({ ...base, padding: '0 4px', color: isDark ? '#64748b' : '#94a3b8' }),
+  placeholder: (base) => ({ ...base, color: isDark ? '#475569' : '#94a3b8', fontSize: '0.95rem', margin: 0 }),
+  singleValue: (base) => ({ ...base, color: isDark ? '#f1f5f9' : '#1e293b', margin: 0 }),
+  menu: (base) => ({
+    ...base,
+    borderRadius: '8px',
+    boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.5)' : '0 8px 24px rgba(0,0,0,0.14)',
+    zIndex: 9999,
+    marginTop: '4px',
+    backgroundColor: isDark ? '#1e293b' : 'white',
+    border: isDark ? '1px solid #334155' : 'none',
+  }),
   menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   option: (base, state) => ({
     ...base,
-    backgroundColor: state.isSelected ? '#3b82f6' : state.isFocused ? '#f0f9ff' : 'white',
-    color: state.isSelected ? 'white' : '#1e293b',
+    backgroundColor: state.isSelected
+      ? '#3b82f6'
+      : state.isFocused
+        ? (isDark ? '#0f172a' : '#f0f9ff')
+        : (isDark ? '#1e293b' : 'white'),
+    color: state.isSelected ? 'white' : (isDark ? '#f1f5f9' : '#1e293b'),
     fontSize: '0.92rem',
     cursor: 'pointer',
     padding: '0.55rem 1rem',
@@ -109,8 +125,25 @@ const getPasswordStrength = (
 
 // ─── COMPONENTE PRINCIPAL ─────────────────────────────────────────────────────
 
+function useDarkMode(): boolean {
+  const [isDark, setIsDark] = useState(() =>
+    document.documentElement.classList.contains('dark')
+  );
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, { attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+
+  return isDark;
+}
+
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const isDark = useDarkMode();
 
   // Paso actual: 1 = empresa, 2 = usuario
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
@@ -332,8 +365,16 @@ export default function RegisterPage() {
         <div className="register-brand">
           <div className="brand-background" />
           <div className="brand-content">
-            <div className="brand-logo">K</div>
-            <div className="brand-name">Kardex CO</div>
+            <div
+              className="brand-logo"
+              onClick={() => navigate('/')}
+              style={{ cursor: 'pointer' }}
+            >K</div>
+            <div
+              className="brand-name"
+              onClick={() => navigate('/')}
+              style={{ cursor: 'pointer' }}
+            >Kardex CO</div>
             <p className="brand-description">
               Crea tu cuenta y lleva tu negocio al siguiente nivel
             </p>
@@ -506,7 +547,7 @@ export default function RegisterPage() {
                     onChange={(opt: SingleValue<SelectOption>) =>
                       setCompany(prev => ({ ...prev, sector: opt?.value ?? '' }))
                     }
-                    styles={buildSelectStyles(!!errors.sector)}
+                    styles={buildSelectStyles(!!errors.sector, isDark)}
                     noOptionsMessage={() => 'Sin resultados'}
                   />
                   {errors.sector && (
@@ -576,7 +617,7 @@ export default function RegisterPage() {
                     onChange={(opt: SingleValue<SelectOption>) =>
                       setCompany(prev => ({ ...prev, country: opt?.value ?? '' }))
                     }
-                    styles={buildSelectStyles(!!errors.country)}
+                    styles={buildSelectStyles(!!errors.country, isDark)}
                     noOptionsMessage={() => 'Sin resultados'}
                   />
                   {errors.country && (
@@ -614,7 +655,7 @@ export default function RegisterPage() {
                     onChange={(opt: SingleValue<SelectOption>) =>
                       setCompany(prev => ({ ...prev, city: opt?.value ?? '' }))
                     }
-                    styles={buildSelectStyles(!!errors.city)}
+                    styles={buildSelectStyles(!!errors.city, isDark)}
                     noOptionsMessage={() => 'Sin resultados'}
                   />
                   {errors.city && (
@@ -749,7 +790,7 @@ export default function RegisterPage() {
                     onChange={(opt: SingleValue<SelectOption>) =>
                       setUser(prev => ({ ...prev, role: opt?.value ?? '' }))
                     }
-                    styles={buildSelectStyles(!!errors.role)}
+                    styles={buildSelectStyles(!!errors.role, isDark)}
                     noOptionsMessage={() => 'Sin resultados'}
                   />
                   {errors.role && (
