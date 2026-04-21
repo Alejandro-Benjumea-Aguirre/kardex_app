@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { LogOut, Menu, X, LayoutDashboard, Send, Receipt, Plus, BarChart3 } from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../features/auth/hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import ThemeToggle from '../ui/ThemeToggle';
 import logoDark  from '../../assets/img/logo-dark.png';
