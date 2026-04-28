@@ -18,11 +18,13 @@ export const UseForm = ({ data, errors, onChange, onNext, onSubmit, onSelectChan
     const getPasswordStrength = (
         pwd: string
     ): { level: 0 | 1 | 2 | 3; label: string } => {
-        if (pwd.length === 0) return { level: 0, label: '' };
+        if (!pwd || pwd.length === 0) return { level: 0, label: '' };
+        
         let score = 0;
         if (pwd.length >= 8) score++;
         if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
         if (/[0-9]/.test(pwd) && /[^A-Za-z0-9]/.test(pwd)) score++;
+
         const labels = ['', 'Débil', 'Media', 'Fuerte'];
         return { level: score as 0 | 1 | 2 | 3, label: labels[score] };
     };
@@ -110,7 +112,7 @@ export const UseForm = ({ data, errors, onChange, onNext, onSubmit, onSelectChan
                     menuPortalTarget={document.body}
                     menuPosition="fixed"
                     options={ROLE_OPTIONS}
-                    alue={ROLE_OPTIONS.find(opt => opt.value === data.role) || null}
+                    value={ROLE_OPTIONS.find(opt => opt.value === data.role) || null}
                     onChange={(opt: SingleValue<SelectOption>) =>
                         onSelectChange((prev: any) => ({ ...prev, role: opt?.value ?? '' }))
                     }

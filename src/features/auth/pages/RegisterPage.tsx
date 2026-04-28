@@ -66,7 +66,7 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {/* ──────────────── PASO 1: EMPRESA ──────────────── */}
+          {/* ──────────────── EMPRESA ──────────────── */}
           {form.currentStep === 1 && (
             <CompanyForm 
             data={form.company}
@@ -74,21 +74,21 @@ export default function RegisterPage() {
             onChange={form.handleCompanyChange}
             onSelectChange={form.setCompany} // Pasamos el setter para el Select
             onNext={form.handleNextStep}
-            styles={buildSelectStyles(!!form.errors.sector, isDark)}
+            styles={buildSelectStyles}
             isDark={isDark}
             />
           )}
 
-          {/* ──────────────── PASO 2: USUARIO ──────────────── */}
+          {/* ──────────────── USUARIO ──────────────── */}
           {form.currentStep === 2 && (
             <UseForm 
-              data={form.company}
+              data={form.user}
               errors={form.errors}
               onChange={form.handleCompanyChange}
               onSelectChange={form.setCompany} // Pasamos el setter para el Select
               onNext={form.handleNextStep}
               onSubmit={form.handleSubmit}
-              styles={buildSelectStyles(!!form.errors.sector, isDark)}
+              styles={buildSelectStyles}
               isDark={isDark}
               isLoading={form.isLoading}
             />
