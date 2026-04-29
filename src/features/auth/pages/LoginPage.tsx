@@ -86,6 +86,12 @@ export default function LoginPage() {
     }
   };
 
+  const handleDevLogin = async () => {
+    try {
+      await login({ email: 'dev@kardex.co', password: 'mock' });
+    } catch { /* ignorado en modo mock */ }
+  };
+
   return (
     <div className="main-wrapper-login">
       <div className="login-container">
@@ -187,6 +193,30 @@ export default function LoginPage() {
               </button>
             </div>
           </form>
+
+          {import.meta.env.VITE_MOCK_AUTH === 'true' && (
+            <div style={{ marginTop: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={handleDevLogin}
+                disabled={isSubmitting}
+                style={{
+                  width: '100%',
+                  padding: '0.6rem',
+                  background: 'transparent',
+                  border: '1.5px dashed #f59e0b',
+                  borderRadius: '8px',
+                  color: '#f59e0b',
+                  fontSize: '0.82rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  letterSpacing: '0.03em',
+                }}
+              >
+                ⚡ Dev: entrar sin credenciales
+              </button>
+            </div>
+          )}
 
           <div className="form-footer">
             <p className="signup-text">

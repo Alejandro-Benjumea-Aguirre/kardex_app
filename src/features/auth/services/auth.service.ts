@@ -10,6 +10,19 @@ export interface LoginCredentials {
 
 export type AuthUser = User;
 
+const MOCK_USER: AuthUser = {
+  id: 1,
+  first_name: 'Dev',
+  last_name: 'Local',
+  full_name: 'Dev Local',
+  email: 'dev@kardex.co',
+  company: { id: 1, name: 'Empresa Demo', slug: 'empresa-demo' },
+  roles: [{ id: 1, name: 'admin', display_name: 'Administrador' }],
+  status: { is_active: true, is_email_verified: true },
+};
+
+const IS_MOCK = import.meta.env.VITE_MOCK_AUTH === 'true';
+
 interface BackendAuthResponse {
   success: boolean;
   data: {
@@ -35,6 +48,13 @@ export interface ApiValidationError {
 export const AuthService = {
 
   async login(credentials: LoginCredentials): Promise<AuthUser> {
+    if (IS_MOCK) {
+      localStorage.setItem(TOKEN_KEY, 'mock-token-dev');
+      localStorage.setItem('kardex_token_expires', String(Date.now() + 24 * 60 * 60 * 1000));
+      localStorage.setItem('kardex_user', JSON.stringify(MOCK_USER));
+      return MOCK_USER;
+    }
+
     const { data } = await api.post<BackendAuthResponse>('/auth/login', {
       email:    credentials.email,
       password: credentials.password,
@@ -67,6 +87,7 @@ export const AuthService = {
   },
 
   async me(): Promise<AuthUser> {
+    if (IS_MOCK) return MOCK_USER;
     const { data } = await api.get<BackendMeResponse>('/auth/me');
     localStorage.setItem('kardex_user', JSON.stringify(data.data));
     return data.data;

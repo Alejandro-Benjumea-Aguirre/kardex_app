@@ -81,11 +81,11 @@ export default function RegisterPage() {
 
           {/* ──────────────── USUARIO ──────────────── */}
           {form.currentStep === 2 && (
-            <UseForm 
+            <UseForm
               data={form.user}
               errors={form.errors}
-              onChange={form.handleCompanyChange}
-              onSelectChange={form.setCompany} // Pasamos el setter para el Select
+              onChange={form.handleUserChange}
+              onSelectChange={form.setUser}
               onNext={form.handleNextStep}
               onSubmit={form.handleSubmit}
               styles={buildSelectStyles}
