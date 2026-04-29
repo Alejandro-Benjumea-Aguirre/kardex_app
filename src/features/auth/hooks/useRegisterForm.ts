@@ -58,7 +58,8 @@ export function useRegisterForm() {
     }
   };
 
-  const handleNextStep = () => {
+  const handleNextStep = (step?: number) => {
+    if (step === 1) { setCurrentStep(1); return; }
     if (validateStep1()) setCurrentStep(2);
   };
 
@@ -97,6 +98,10 @@ export function useRegisterForm() {
     newErrors.password = 'La contraseña es requerida';
     else if (user.password.length < 8)
     newErrors.password = 'Mínimo 8 caracteres';
+    else if (!/[A-Z]/.test(user.password) || !/[a-z]/.test(user.password))
+    newErrors.password = 'Debe contener mayúsculas y minúsculas';
+    else if (!/[0-9]/.test(user.password))
+    newErrors.password = 'Debe contener al menos un número';
     if (!user.confirmPassword)
     newErrors.confirmPassword = 'Confirma tu contraseña';
     else if (user.password !== user.confirmPassword)
