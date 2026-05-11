@@ -1,55 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, FileText, DollarSign, Package,
   Settings, Image as ImageIcon, Save, X,
-  AlertCircle, CheckCircle2,
+  CheckCircle2,
 } from 'lucide-react';
 import { ImageUpload } from '../../../components/ui/ImageUpload';
+import { useProductForm } from '../hooks/useProductForm';
 
 export default function CreateProductPage() {
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    name: '',
-    category: '',
-    sku: '',
-    description: '',
-    purchasePrice: '',
-    salePrice: '',
-    tax: '0',
-    initialStock: '',
-    minStock: '',
-    unit: 'unidades',
-    isActive: true,
-    trackInventory: true,
-  });
-  const [margin, setMargin] = useState<number | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  useEffect(() => {
-    const purchase = parseFloat(formData.purchasePrice);
-    const sale     = parseFloat(formData.salePrice);
-    if (purchase > 0 && sale > 0) {
-      setMargin((sale - purchase) / sale * 100);
-    } else {
-      setMargin(null);
-    }
-  }, [formData.purchasePrice, formData.salePrice]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
-    }));
-  };
-
-  const handleToggle = (field: 'isActive' | 'trackInventory') => {
-    setFormData(prev => ({ ...prev, [field]: !prev[field] }));
-  };
+  const { formData, margin, isSubmitting, handleChange, handleToggle, setIsSubmitting } = useProductForm();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,4 +1,3 @@
-import React from 'react';
 import { X, Package, DollarSign, Archive } from 'lucide-react';
 import { motion } from 'framer-motion';
 export interface SaleLine {
@@ -17,7 +16,6 @@ interface SaleLineItemProps {
 }
 export function SaleLineItem({
   item,
-  index,
   onChange,
   onRemove,
   canRemove
@@ -52,7 +50,7 @@ export function SaleLineItem({
               value={item.name}
               onChange={(e) => onChange(item.id, 'name', e.target.value)}
               placeholder="Nombre del producto"
-              className="block w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500" />
+              className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500" />
           </div>
         </div>
 
