@@ -1,4 +1,3 @@
-import React from 'react';
 import { X, Package, DollarSign } from 'lucide-react';
 import { motion } from 'framer-motion';
 export interface ProductLine {
@@ -16,10 +15,9 @@ interface ProductLineItemProps {
 }
 export function ProductLineItem({
   item,
-  index,
   onChange,
   onRemove,
-  canRemove
+  canRemove,
 }: ProductLineItemProps) {
   const subtotal = item.quantity * item.unitPrice;
   return (

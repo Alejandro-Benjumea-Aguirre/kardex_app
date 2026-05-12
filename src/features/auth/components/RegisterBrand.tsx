@@ -1,6 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 
-export const RegisterBrand = ({ currentStep }: any) => {
+interface RegisterBrandProps {
+  currentStep: 1 | 2;
+}
+
+export const RegisterBrand = ({ currentStep }: RegisterBrandProps) => {
     const navigate = useNavigate();
     return (
         <div className="register-brand">

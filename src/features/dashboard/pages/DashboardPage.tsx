@@ -1,4 +1,3 @@
-import React from 'react';
 import { SummaryCards } from '../components/SummaryCards';
 import { ActionButtons } from '../components/ActionButtons';
 import { MonthlyChart } from '../components/MonthlyChart';

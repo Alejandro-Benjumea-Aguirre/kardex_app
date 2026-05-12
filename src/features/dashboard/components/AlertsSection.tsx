@@ -1,4 +1,3 @@
-import React from 'react';
 import { AlertTriangle, Info, Target, ChevronRight } from 'lucide-react';
 const alerts = [
 {

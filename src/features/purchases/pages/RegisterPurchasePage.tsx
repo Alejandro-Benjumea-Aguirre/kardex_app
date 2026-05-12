@@ -131,12 +131,14 @@ export default function RegisterPurchasePage() {
                 <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Forma de pago</h2>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {[
-                  { id: 'cash', label: 'Efectivo', icon: Banknote },
-                  { id: 'transfer', label: 'Transferencia', icon: ArrowRightLeft },
-                  { id: 'credit', label: 'Crédito', icon: Clock, note: 'Genera cuenta por pagar' },
-                ].map(method => (
-                  <button key={method.id} type="button" onClick={() => setPaymentMethod(method.id as any)}
+                {(
+                  [
+                    { id: 'cash'     as const, label: 'Efectivo',       icon: Banknote       },
+                    { id: 'transfer' as const, label: 'Transferencia',   icon: ArrowRightLeft },
+                    { id: 'credit'   as const, label: 'Crédito',         icon: Clock,         note: 'Genera cuenta por pagar' },
+                  ] satisfies { id: typeof paymentMethod; label: string; icon: React.ElementType; note?: string }[]
+                ).map(method => (
+                  <button key={method.id} type="button" onClick={() => setPaymentMethod(method.id)}
                     className={`relative flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-200 ${paymentMethod === method.id ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' : 'border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-600'}`}>
                     {paymentMethod === method.id && <div className="absolute top-2 right-2 text-blue-600"><Check className="w-4 h-4" /></div>}
                     <method.icon className={`w-6 h-6 mb-2 ${paymentMethod === method.id ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}`} />
@@ -148,10 +150,12 @@ export default function RegisterPurchasePage() {
             </motion.section>
 
             <div className="hidden lg:flex gap-4 pt-4">
-              <button className="flex-1 bg-blue-600 text-white font-medium py-3 px-6 rounded-lg hover:bg-blue-700 shadow-sm shadow-blue-200 transition-colors flex items-center justify-center gap-2">
+              <button type="button"
+                className="flex-1 bg-blue-600 text-white font-medium py-3 px-6 rounded-lg hover:bg-blue-700 shadow-sm shadow-blue-200 transition-colors flex items-center justify-center gap-2">
                 <Save className="w-5 h-5" /> Guardar compra
               </button>
-              <button className="flex-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-medium py-3 px-6 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2">
+              <button type="button" onClick={() => navigate('/dashboard')}
+                className="flex-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-medium py-3 px-6 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2">
                 <X className="w-5 h-5" /> Cancelar
               </button>
             </div>
@@ -166,10 +170,12 @@ export default function RegisterPurchasePage() {
 
       <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 p-4 lg:hidden z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <div className="flex gap-3 max-w-6xl mx-auto">
-          <button className="flex-1 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-medium py-3 px-4 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors flex items-center justify-center">
+          <button type="button" onClick={() => navigate('/dashboard')}
+            className="flex-1 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-medium py-3 px-4 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors flex items-center justify-center">
             <X className="w-5 h-5" />
           </button>
-          <button className="flex-[3] bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 shadow-sm shadow-blue-200 transition-colors flex items-center justify-center gap-2">
+          <button type="button"
+            className="flex-[3] bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 shadow-sm shadow-blue-200 transition-colors flex items-center justify-center gap-2">
             <Save className="w-5 h-5" /> Guardar compra
           </button>
         </div>

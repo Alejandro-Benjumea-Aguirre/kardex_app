@@ -15,14 +15,18 @@ export default function CreateProductPage() {
 
   const { formData, margin, isSubmitting, handleChange, handleToggle, setIsSubmitting } = useProductForm();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const doSubmit = () => {
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     }, 1500);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    doSubmit();
   };
 
   const containerVariants = {
@@ -257,7 +261,7 @@ export default function CreateProductPage() {
                   : <><Save className="w-5 h-5" /> Guardar producto</>
                 }
               </button>
-              <button type="button"
+              <button type="button" onClick={() => navigate('/dashboard')}
                 className="flex-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-medium py-3 px-6 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2">
                 <X className="w-5 h-5" /> Cancelar
               </button>
@@ -269,11 +273,11 @@ export default function CreateProductPage() {
       {/* Acciones — Mobile */}
       <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 p-4 lg:hidden z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <div className="flex gap-3 max-w-3xl mx-auto">
-          <button type="button"
+          <button type="button" onClick={() => navigate('/dashboard')}
             className="flex-1 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-medium py-3 px-4 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors flex items-center justify-center">
             <X className="w-5 h-5" />
           </button>
-          <button onClick={handleSubmit} disabled={isSubmitting}
+          <button type="button" onClick={doSubmit} disabled={isSubmitting}
             className="flex-[3] bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 shadow-sm shadow-blue-200 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
             {isSubmitting
               ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

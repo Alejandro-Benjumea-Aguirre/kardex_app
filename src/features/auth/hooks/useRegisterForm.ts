@@ -5,7 +5,7 @@ import {CompanyData, UserData, FormErrors} from '../types/register.types';
 export function useRegisterForm() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
-  const [errors, setErrors] = useState<any>({});
+  const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -44,7 +44,7 @@ export function useRegisterForm() {
     const { name, value } = e.target;
     setCompany(prev => ({ ...prev, [name]: value }));
     if (errors[name as keyof FormErrors]) {
-      setErrors((prev: any) => ({ ...prev, [name]: undefined }));
+      setErrors(prev => ({ ...prev, [name]: undefined }));
     }
   };
 
@@ -54,7 +54,7 @@ export function useRegisterForm() {
     const { name, value } = e.target;
     setUser(prev => ({ ...prev, [name]: value }));
     if (errors[name as keyof FormErrors]) {
-      setErrors((prev: any) => ({ ...prev, [name]: undefined }));
+      setErrors(prev => ({ ...prev, [name]: undefined }));
     }
   };
 

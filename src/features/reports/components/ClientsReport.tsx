@@ -104,10 +104,10 @@ export default function ClientsReport() {
 
       <div className="subtabs">
         <button className={`subtab ${subTab === 'receivable' ? 'subtab--active' : ''}`} onClick={() => { setSubTab('receivable'); setFilter('') }}>
-          Cuentas por Cobrar — {formatCurrency(pendingRec)}
+          Cuentas por Cobrar — {formatCurrency(pendingRec)} / {formatCurrency(totalRec)}
         </button>
         <button className={`subtab ${subTab === 'payable' ? 'subtab--active' : ''}`} onClick={() => { setSubTab('payable'); setFilter('') }}>
-          Cuentas por Pagar — {formatCurrency(pendingPay)}
+          Cuentas por Pagar — {formatCurrency(pendingPay)} / {formatCurrency(totalPay)}
         </button>
       </div>
 

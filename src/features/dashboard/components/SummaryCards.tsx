@@ -1,22 +1,24 @@
-import React from 'react';
 import {
   Wallet,
   TrendingUp,
   TrendingDown,
   PiggyBank,
   ArrowUpRight,
-  ArrowDownRight } from
-'lucide-react';
-interface MetricCardProps {
+  ArrowDownRight,
+  LucideIcon,
+} from 'lucide-react';
+
+interface MetricItem {
   title: string;
   amount: string;
   change: string;
   isPositive: boolean;
-  icon: React.ElementType;
+  icon: LucideIcon;
   colorClass: string;
   iconColorClass: string;
 }
-const metrics = [
+
+const metrics: MetricItem[] = [
 {
   title: 'Balance general',
   amount: '$24,563.00',
