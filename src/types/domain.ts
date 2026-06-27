@@ -22,6 +22,17 @@ export interface User {
   status?: { is_active: boolean; is_email_verified: boolean };
 }
 
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  color: string;
+  is_active: boolean;
+  created_at: string;
+  parent_id?: number;
+}
+
 export interface Product {
   id: number;
   name: string;

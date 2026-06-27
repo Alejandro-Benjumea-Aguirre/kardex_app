@@ -8,12 +8,15 @@ import {
 } from 'lucide-react';
 import { ImageUpload } from '../../../components/ui/ImageUpload';
 import { useProductForm } from '../hooks/useProductForm';
+import { useCategoryStore } from '../../categories/hooks/useCategoryStore';
 
 export default function CreateProductPage() {
   const navigate = useNavigate();
   const [showSuccess, setShowSuccess] = useState(false);
 
   const { formData, margin, isSubmitting, handleChange, handleToggle, setIsSubmitting } = useProductForm();
+  const { categories } = useCategoryStore();
+  const activeCategories = categories.filter(c => c.is_active);
 
   const doSubmit = () => {
     setIsSubmitting(true);
@@ -89,12 +92,9 @@ export default function CreateProductPage() {
                   <select id="category" name="category" required value={formData.category} onChange={handleChange}
                     className="block w-full px-4 h-12 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-700">
                     <option value="" disabled>Seleccionar categoría</option>
-                    <option value="alimentos">Alimentos</option>
-                    <option value="bebidas">Bebidas</option>
-                    <option value="limpieza">Limpieza</option>
-                    <option value="electronica">Electrónica</option>
-                    <option value="ropa">Ropa</option>
-                    <option value="otros">Otros</option>
+                    {activeCategories.map(cat => (
+                      <option key={cat.id} value={cat.slug}>{cat.name}</option>
+                    ))}
                   </select>
                 </div>
                 <div>

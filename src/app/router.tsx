@@ -8,9 +8,12 @@ import CreateProductPage  from '../features/products/pages/CreateProductPage';
 import RegisterSalePage   from '../features/sales/pages/RegisterSalePage';
 import RegisterPurchasePage from '../features/purchases/pages/RegisterPurchasePage';
 import ReportsPage        from '../features/reports/pages/ReportsPage';
+import CategoriesPage     from '../features/categories/pages/CategoriesPage';
 
 import ProtectedRoute   from '../features/auth/components/ProtectedRoute';
 import DashboardLayout  from '../components/layout/DashboardLayout';
+
+const ADMIN_ROLES = ['admin', 'super_admin'];
 
 export function AppRouter() {
   return (
@@ -27,6 +30,14 @@ export function AppRouter() {
         <Route path="/sales/new"    element={<RegisterSalePage />} />
         <Route path="/payments/new" element={<RegisterPurchasePage />} />
         <Route path="/reports"      element={<ReportsPage />} />
+        <Route
+          path="/categories"
+          element={
+            <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+              <CategoriesPage />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
