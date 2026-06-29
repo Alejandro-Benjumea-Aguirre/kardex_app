@@ -23,31 +23,38 @@ export interface User {
 }
 
 export interface Category {
-  id: number;
+  id: string;
   name: string;
   slug: string;
   description?: string;
-  color: string;
   is_active: boolean;
   created_at: string;
-  parent_id?: number;
+  parent_id?: string;
 }
 
 export interface Product {
-  id: number;
+  id: string;
   name: string;
-  category: string;
+  slug?: string;
+  category?: string;
+  category_id?: string;
   sku?: string;
   description?: string;
-  purchase_price: number;
+  cost_price: number;
   sale_price: number;
-  tax: number;
-  stock: number;
-  min_stock: number;
-  unit: string;
+  min_price?: number;
+  price_includes_tax?: boolean;
+  tax_rate?: number;
+  type?: 'physical' | 'service' | 'digital' | 'composite' | 'other';
+  has_variants?: boolean;
+  attributes?: Record<string, string>;
+  stock?: number;
+  min_stock?: number;
+  unit?: string;
   is_active: boolean;
-  track_inventory: boolean;
+  track_inventory?: boolean;
   image?: string;
+  created_at?: string;
 }
 
 export interface SaleLine {

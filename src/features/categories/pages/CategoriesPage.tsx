@@ -1,25 +1,24 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Tag, Plus, Pencil, Trash2, CheckCircle2,
+  Tag, Plus, Pencil, CheckCircle2,
   X, Search, LayoutGrid, AlertTriangle,
 } from 'lucide-react';
+import Swal from 'sweetalert2';
 import { useCategoryStore } from '../hooks/useCategoryStore';
-import { CATEGORY_COLORS } from '../data/mockCategories';
 import type { Category } from '../../../types/domain';
 
 type ModalMode = 'create' | 'edit' | null;
 
-const EMPTY_FORM = { name: '', description: '', color: '#3b82f6', is_active: true, has_parent: false, parent_id: null as number | null };
+const EMPTY_FORM = { name: '', description: '', is_active: true, has_parent: false, parent_id: null as string | null };
 
 export default function CategoriesPage() {
-  const { categories, add, update, remove, toggleActive } = useCategoryStore();
+  const { categories, isLoading, error, add, update, toggleActive } = useCategoryStore();
 
   const [search, setSearch]           = useState('');
   const [modalMode, setModalMode]     = useState<ModalMode>(null);
   const [editing, setEditing]         = useState<Category | null>(null);
   const [form, setForm]               = useState(EMPTY_FORM);
-  const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
   const [toast, setToast]             = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -46,7 +45,6 @@ export default function CategoriesPage() {
     setForm({
       name:       cat.name,
       description: cat.description ?? '',
-      color:      cat.color,
       is_active:  cat.is_active,
       has_parent: cat.parent_id != null,
       parent_id:  cat.parent_id ?? null,
@@ -60,30 +58,27 @@ export default function CategoriesPage() {
     setEditing(null);
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.name.trim()) return;
     setIsSubmitting(true);
-    setTimeout(() => {
+    try {
       const parent_id = form.has_parent && form.parent_id ? form.parent_id : undefined;
       if (modalMode === 'create') {
-        add({ name: form.name, description: form.description, color: form.color, parent_id });
+        await add({ name: form.name, description: form.description, parent_id });
         showToast('Categoría creada correctamente');
       } else if (editing) {
-        update(editing.id, { ...form, parent_id });
+        await update(editing.id, { ...form, parent_id });
         showToast('Categoría actualizada correctamente');
       }
-      setIsSubmitting(false);
       closeModal();
-    }, 600);
+    } catch {
+      showToast('Ocurrió un error al guardar la categoría');
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
-  function confirmDelete() {
-    if (!deleteTarget) return;
-    remove(deleteTarget.id);
-    setDeleteTarget(null);
-    showToast('Categoría eliminada');
-  }
 
   const containerVariants = {
     hidden:  { opacity: 0 },
@@ -173,7 +168,17 @@ export default function CategoriesPage() {
           animate="visible"
           className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden"
         >
-          {filtered.length === 0 ? (
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-3">
+              <div className="w-8 h-8 border-2 border-slate-200 dark:border-slate-600 border-t-blue-500 rounded-full animate-spin" />
+              <p className="text-sm text-slate-500 dark:text-slate-400">Cargando categorías...</p>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-2">
+              <AlertTriangle className="w-10 h-10 text-rose-400 opacity-60" />
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{error}</p>
+            </div>
+          ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-slate-400 dark:text-slate-500">
               <Tag className="w-12 h-12 mb-3 opacity-30" />
               <p className="font-medium text-slate-500 dark:text-slate-400">
@@ -190,95 +195,130 @@ export default function CategoriesPage() {
             </div>
           ) : (
             <>
-              {/* Encabezado tabla — solo desktop */}
-              <div className="hidden sm:grid grid-cols-[auto_1fr_auto_auto_auto_auto] gap-4 px-6 py-3 border-b border-slate-100 dark:border-slate-700 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                <span>Color</span>
-                <span>Nombre / Descripción</span>
-                <span>Slug</span>
-                <span>Categoría padre</span>
-                <span>Estado</span>
-                <span>Acciones</span>
+              {/* Encabezado — solo desktop */}
+              <div className="hidden sm:grid grid-cols-[1fr_1fr_160px_100px_72px] gap-6 px-6 py-3 border-b border-slate-100 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60">
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Nombre</span>
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Descripción</span>
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Categoría padre</span>
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Estado</span>
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Acción</span>
               </div>
 
               <AnimatePresence initial={false}>
                 {filtered.map(cat => {
                   const parent = cat.parent_id ? categories.find(c => c.id === cat.parent_id) : null;
+                  const initial = cat.name.charAt(0).toUpperCase();
+                  const hue = cat.name.split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0) % 360;
+                  const avatarStyle = { backgroundColor: `hsl(${hue},55%,88%)`, color: `hsl(${hue},55%,35%)` };
+
                   return (
-                  <motion.div
-                    key={cat.id}
-                    variants={itemVariants}
-                    layout
-                    exit={{ opacity: 0, height: 0 }}
-                    className="grid grid-cols-1 sm:grid-cols-[auto_1fr_auto_auto_auto_auto] gap-4 items-center px-6 py-4 border-b border-slate-50 dark:border-slate-700/50 last:border-b-0 hover:bg-slate-50/60 dark:hover:bg-slate-700/30 transition-colors"
-                  >
-                    {/* Color dot */}
-                    <div
-                      className="w-8 h-8 rounded-lg shadow-sm flex-shrink-0"
-                      style={{ backgroundColor: cat.color }}
-                    />
-
-                    {/* Nombre + descripción + padre (móvil) */}
-                    <div className="min-w-0">
-                      <p className="font-semibold text-slate-900 dark:text-slate-100 truncate">{cat.name}</p>
-                      {cat.description && (
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">{cat.description}</p>
-                      )}
-                      {parent && (
-                        <div className="flex sm:hidden items-center gap-1 mt-1">
-                          <div className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: parent.color }} />
-                          <span className="text-xs text-slate-500 dark:text-slate-400 truncate">{parent.name}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Slug */}
-                    <span className="hidden sm:block text-xs font-mono text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">
-                      {cat.slug}
-                    </span>
-
-                    {/* Categoría padre */}
-                    <div className="hidden sm:flex items-center gap-1.5 min-w-0">
-                      {parent ? (
-                        <>
-                          <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: parent.color }} />
-                          <span className="text-xs text-slate-600 dark:text-slate-300 truncate">{parent.name}</span>
-                        </>
-                      ) : (
-                        <span className="text-xs text-slate-300 dark:text-slate-600">—</span>
-                      )}
-                    </div>
-
-                    {/* Toggle estado */}
-                    <button
-                      onClick={() => { toggleActive(cat.id); showToast(`Categoría ${cat.is_active ? 'desactivada' : 'activada'}`); }}
-                      className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border transition-colors ${
-                        cat.is_active
-                          ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/50'
-                          : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-600 hover:bg-slate-200 dark:hover:bg-slate-600'
-                      }`}
+                    <motion.div
+                      key={cat.id}
+                      variants={itemVariants}
+                      layout
+                      exit={{ opacity: 0, height: 0 }}
+                      className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_160px_100px_72px] gap-4 sm:gap-6 items-center px-6 py-4 border-b border-slate-100 dark:border-slate-700/50 last:border-b-0 hover:bg-blue-50/30 dark:hover:bg-slate-700/20 transition-colors group"
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${cat.is_active ? 'bg-emerald-500' : 'bg-slate-400'}`} />
-                      {cat.is_active ? 'Activa' : 'Inactiva'}
-                    </button>
+                      {/* Nombre */}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div
+                          className="w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center text-sm font-bold shadow-sm"
+                          style={avatarStyle}
+                        >
+                          {initial}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-slate-800 dark:text-slate-100 truncate leading-tight">{cat.name}</p>
+                          {/* Padre visible solo en móvil */}
+                          {parent && (
+                            <div className="flex sm:hidden items-center gap-1 mt-0.5">
+                              <Tag className="w-3 h-3 text-slate-400" />
+                              <span className="text-xs text-slate-400 dark:text-slate-500 truncate">{parent.name}</span>
+                            </div>
+                          )}
+                          {/* Estado visible solo en móvil */}
+                          <div className="flex sm:hidden items-center gap-1.5 mt-1">
+                            <span className={`w-1.5 h-1.5 rounded-full ${cat.is_active ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                            <span className={`text-xs font-medium ${cat.is_active ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}`}>
+                              {cat.is_active ? 'Activa' : 'Inactiva'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
 
-                    {/* Acciones */}
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => openEdit(cat)}
-                        title="Editar"
-                        className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => setDeleteTarget(cat)}
-                        title="Eliminar"
-                        className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </motion.div>
+                      {/* Descripción */}
+                      <p className="hidden sm:block text-sm text-slate-500 dark:text-slate-400 truncate">
+                        {cat.description || <span className="text-slate-300 dark:text-slate-600 italic">Sin descripción</span>}
+                      </p>
+
+                      {/* Categoría padre */}
+                      <div className="hidden sm:flex items-center">
+                        {parent ? (
+                          <span className="inline-flex items-center gap-1.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-medium px-2.5 py-1 rounded-full">
+                            <Tag className="w-3 h-3" />
+                            {parent.name}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-slate-300 dark:text-slate-600">—</span>
+                        )}
+                      </div>
+
+                      {/* Estado */}
+                      <div className="hidden sm:flex items-center">
+                        <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${
+                          cat.is_active
+                            ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+                            : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500'
+                        }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${cat.is_active ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-500'}`} />
+                          {cat.is_active ? 'Activa' : 'Inactiva'}
+                        </span>
+                      </div>
+
+                      {/* Acciones */}
+                      <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => openEdit(cat)}
+                          title="Editar"
+                          className="p-2 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          title={cat.is_active ? 'Inactivar' : 'Activar'}
+                          onClick={async () => {
+                            const accion = cat.is_active ? 'inactivar' : 'activar';
+                            const { isConfirmed } = await Swal.fire({
+                              title: `¿${cat.is_active ? 'Inactivar' : 'Activar'} categoría?`,
+                              text:  `Vas a ${accion} "${cat.name}". ¿Deseas continuar?`,
+                              icon:  cat.is_active ? 'warning' : 'question',
+                              showCancelButton:  true,
+                              confirmButtonText: `Sí, ${accion}`,
+                              cancelButtonText:  'Cancelar',
+                              confirmButtonColor: cat.is_active ? '#f59e0b' : '#10b981',
+                              cancelButtonColor:  '#64748b',
+                            });
+                            if (!isConfirmed) return;
+                            try {
+                              await toggleActive(cat.id, cat.is_active);
+                              showToast(`Categoría ${cat.is_active ? 'inactivada' : 'activada'} correctamente`);
+                            } catch {
+                              showToast('Error al cambiar el estado');
+                            }
+                          }}
+                          className={`p-2 rounded-lg transition-colors ${
+                            cat.is_active
+                              ? 'text-slate-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20'
+                              : 'text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20'
+                          }`}
+                        >
+                          {cat.is_active
+                            ? <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                            : <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 13l4 4L19 7"/></svg>
+                          }
+                        </button>
+                      </div>
+                    </motion.div>
                   );
                 })}
               </AnimatePresence>
@@ -355,25 +395,6 @@ export default function CategoriesPage() {
                   />
                 </div>
 
-                {/* Color */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    Color identificador
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {CATEGORY_COLORS.map(({ label, value }) => (
-                      <button
-                        key={value}
-                        type="button"
-                        title={label}
-                        onClick={() => setForm(f => ({ ...f, color: value }))}
-                        className={`w-8 h-8 rounded-lg transition-all ${form.color === value ? 'ring-2 ring-offset-2 ring-blue-500 dark:ring-offset-slate-800 scale-110' : 'hover:scale-105'}`}
-                        style={{ backgroundColor: value }}
-                      />
-                    ))}
-                  </div>
-                </div>
-
                 {/* Categoría padre */}
                 <div className="space-y-3">
                   <label className="flex items-center gap-3 cursor-pointer select-none group">
@@ -409,11 +430,14 @@ export default function CategoriesPage() {
                       >
                         <select
                           value={form.parent_id ?? ''}
-                          onChange={e => setForm(f => ({ ...f, parent_id: e.target.value ? Number(e.target.value) : null }))}
-                          className="block w-full px-4 h-11 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm"
+                          disabled={isLoading}
+                          onChange={e => setForm(f => ({ ...f, parent_id: e.target.value !== '' ? e.target.value : null }))}
+                          className="block w-full px-4 h-11 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          <option value="" disabled>Seleccionar categoría padre</option>
-                          {categories
+                          <option value="">
+                            {isLoading ? 'Cargando categorías...' : 'Seleccionar categoría padre'}
+                          </option>
+                          {!isLoading && categories
                             .filter(c => c.id !== editing?.id)
                             .map(c => (
                               <option key={c.id} value={c.id}>{c.name}</option>
@@ -441,31 +465,6 @@ export default function CategoriesPage() {
                   </div>
                 )}
 
-                {/* Preview */}
-                <div className="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-100 dark:border-slate-600 space-y-1.5">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-7 h-7 rounded-lg flex-shrink-0" style={{ backgroundColor: form.color }} />
-                    <div className="min-w-0">
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                        {form.name || 'Vista previa'}
-                      </span>
-                      {form.description && (
-                        <p className="text-xs text-slate-400 dark:text-slate-500 truncate">{form.description}</p>
-                      )}
-                    </div>
-                  </div>
-                  {form.has_parent && form.parent_id && (() => {
-                    const parent = categories.find(c => c.id === form.parent_id);
-                    return parent ? (
-                      <div className="flex items-center gap-1.5 pl-1">
-                        <span className="text-xs text-slate-400 dark:text-slate-500">Padre:</span>
-                        <div className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: parent.color }} />
-                        <span className="text-xs text-slate-600 dark:text-slate-300">{parent.name}</span>
-                      </div>
-                    ) : null;
-                  })()}
-                </div>
-
                 {/* Botones */}
                 <div className="flex gap-3 pt-1">
                   <button
@@ -487,55 +486,6 @@ export default function CategoriesPage() {
                   </button>
                 </div>
               </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── Modal confirmar eliminación ── */}
-      <AnimatePresence>
-        {deleteTarget && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-            onClick={e => { if (e.target === e.currentTarget) setDeleteTarget(null); }}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-              className="w-full max-w-sm bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 p-6"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2.5 bg-rose-50 dark:bg-rose-900/30 rounded-xl text-rose-600 dark:text-rose-400">
-                  <AlertTriangle className="w-5 h-5" />
-                </div>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Eliminar categoría</h2>
-              </div>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">
-                ¿Estás seguro de que deseas eliminar la categoría{' '}
-                <span className="font-semibold text-slate-900 dark:text-slate-100">"{deleteTarget.name}"</span>?
-              </p>
-              <p className="text-xs text-slate-500 dark:text-slate-500 mb-6">
-                Esta acción no se puede deshacer.
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={confirmDelete}
-                  className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
-                >
-                  Sí, eliminar
-                </button>
-                <button
-                  onClick={() => setDeleteTarget(null)}
-                  className="flex-1 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-medium py-2.5 px-4 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
-                >
-                  Cancelar
-                </button>
-              </div>
             </motion.div>
           </motion.div>
         )}

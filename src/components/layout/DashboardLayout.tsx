@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, Menu, X, LayoutDashboard, Send, Receipt, Plus, BarChart3, LayoutGrid } from 'lucide-react';
+import { LogOut, Menu, X, LayoutDashboard, Send, Receipt, Package, BarChart3, LayoutGrid } from 'lucide-react';
 import { useAuth } from '../../features/auth/hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import ThemeToggle from '../ui/ThemeToggle';
@@ -13,9 +13,9 @@ const NAV_LINKS = [
   { label: 'Dashboard',   icon: LayoutDashboard, path: '/dashboard',    roles: [] },
   { label: 'Ventas',      icon: Send,            path: '/sales/new',    roles: [] },
   { label: 'Compras',     icon: Receipt,         path: '/payments/new', roles: [] },
-  { label: 'Productos',   icon: Plus,            path: '/products/new', roles: [] },
-  { label: 'Reportes',    icon: BarChart3,       path: '/reports',      roles: [] },
+  { label: 'Productos',   icon: Package,         path: '/products',     roles: ADMIN_ROLES },
   { label: 'Categorías',  icon: LayoutGrid,      path: '/categories',   roles: ADMIN_ROLES },
+  { label: 'Reportes',    icon: BarChart3,       path: '/reports',      roles: [] },
 ];
 
 export default function DashboardLayout() {
